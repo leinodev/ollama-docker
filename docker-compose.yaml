@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  webui:
+    image: ghcr.io/open-webui/open-webui:git-09a81eb
+    expose:
+      - 8080/tcp
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - ./open-webui:/app/backend/data
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    expose:
+      - 11434/tcp
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ollama --version || exit 1
+    entrypoint: /root/entrypoint.sh
+    volumes:
+      - ./ollama:/root/.ollama
+      - ./entrypoint.sh:/root/entrypoint.sh
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              device_ids: [ 'all' ]
+#              capabilities: [ gpu ]
